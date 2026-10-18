@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Step-by-step C programming and safe Linux driver lessons, with interactive quizzes and practical sensor examples.">
+  <title>C to Devices</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="lessons.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#lesson">Skip to lesson</a>
+  <header>
+    <a class="brand" href="#welcome"><b aria-hidden="true">C</b> C to Devices</a>
+    <span>Small steps. Real understanding.</span>
+    <button id="menu-toggle" aria-controls="navigation" aria-expanded="false">Lessons</button>
+  </header>
+  <div class="layout">
+    <aside id="navigation" aria-label="Course navigation">
+      <h2 class="eyebrow">YOUR LEARNING PATH</h2>
+      <p id="progress-text" aria-live="polite"></p>
+      <progress id="progress" value="0" max="1" aria-label="Lessons completed"></progress>
+      <label for="search">Find a lesson</label>
+      <input id="search" type="search" placeholder="Try pointers or modules">
+      <nav id="lesson-list" aria-label="Lessons"></nav>
+      <p id="no-results" hidden>No lessons match. Try another word.</p>
+      <a class="bits-link" href="https://itsnavin.github.io/learn-bits/" target="_blank" rel="noopener noreferrer">Open the bit calculator ↗</a>
+      <button id="reset-progress" class="text-button">Reset saved progress</button>
+      <p class="small">Progress stays in this browser. No account needed.</p>
+      <p id="storage-status" role="status" class="small"></p>
+    </aside>
+    <main>
+      <section class="hero">
+        <div class="eyebrow">FROM YOUR FIRST VARIABLE TO YOUR FIRST DRIVER</div>
+        <h1>Make sense of C.<br><span>Then talk to devices.</span></h1>
+        <p>Start from zero. Learn with short explanations, sensor examples, and questions that help you understand why.</p>
+        <div class="tags"><span>Beginner friendly</span><span>Learn at your pace</span><span>Free &amp; open source</span></div>
+      </section>
+      <article id="lesson" tabindex="-1"></article>
+      <noscript><p>This course needs JavaScript for lesson navigation and quizzes. Enable it and reload. You can also read the curriculum in <a href="https://github.com/itsnavin/learn-c/blob/main/lessons.js">the repository</a>.</p></noscript>
+      <footer>Kernel labs belong in a disposable Linux VM, never a production machine. This site teaches concepts; it does not compile or execute C in your browser.</footer>
+    </main>
+  </div>
+</body>
+</html>

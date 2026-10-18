@@ -1,0 +1,70 @@
+name: Validate and publish learning site
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: |
+          python -m pip install -r requirements-dev.txt
+          python -m playwright install --with-deps chromium
+      - name: Browser quizzes, navigation, responsiveness and compiled C outputs
+        env:
+          REQUIRE_C: '1'
+        run: python -m unittest discover -s tests -v
+      - name: Build both modules against Linux 6.8 headers (no loading on runner)
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y linux-headers-generic
+          KDIR=$(find /usr/src -maxdepth 1 -type d -name 'linux-headers-6.8.*-generic' | sort -V | tail -n 1)
+          test -n "$KDIR"
+          make -C labs/hello KDIR="$KDIR" W=1 KCFLAGS=-Werror
+          make -C labs/sensor KDIR="$KDIR" W=1 KCFLAGS=-Werror
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-screenshots
+          path: test-results/
+      - name: Package static website
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: |
+          make -C labs/hello KDIR="$(find /usr/src -maxdepth 1 -type d -name 'linux-headers-6.8.*-generic' | sort -V | tail -n 1)" clean
+          make -C labs/sensor KDIR="$(find /usr/src -maxdepth 1 -type d -name 'linux-headers-6.8.*-generic' | sort -V | tail -n 1)" clean
+          mkdir _site
+          cp index.html styles.css app.js lessons.js .nojekyll _site/
+          cp -r labs _site/
+      - uses: actions/upload-pages-artifact@v3
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        with:
+          path: _site
+
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: validate
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
